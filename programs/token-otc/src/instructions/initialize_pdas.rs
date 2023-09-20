@@ -9,6 +9,7 @@ pub struct InitializeSwapPdaCtx<'info> {
     #[account(mut)]
     creator: Signer<'info>,
 
+    /// CHECK: needed to initialize swap pda
     taker: AccountInfo<'info>,
 
     #[account(
@@ -34,6 +35,7 @@ pub struct InitializeEscrowPdaCtx<'info> {
     #[account(mut)]
     creator: Signer<'info>,
 
+    /// CHECK: needed to initialize escrow pda
     taker: AccountInfo<'info>,
 
     offered_mint: Account<'info, Mint>,

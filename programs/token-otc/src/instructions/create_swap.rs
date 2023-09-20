@@ -9,13 +9,14 @@ pub struct CreateSwapCtx<'info> {
     #[account(mut)]
     creator: Signer<'info>,
 
+    /// CHECK: needed to get swap and escrow pdas
     taker: AccountInfo<'info>,
 
     #[account(
         mut,
-        constraint=creator_ata.mint == offered_mint.key()
+        constraint=creator_ata_offered.mint == offered_mint.key()
     )]
-    creator_ata: Account<'info, TokenAccount>,
+    creator_ata_offered: Account<'info, TokenAccount>,
 
     offered_mint: Account<'info, Mint>,
 
@@ -25,8 +26,6 @@ pub struct CreateSwapCtx<'info> {
         mut,
         seeds = [SWAP_SEED.as_bytes(), taker.key().as_ref()],
         bump = swap.swap_bump,
-        // constraint = swap.taker == taker.key(),
-        // constraint = swap.offered_mint == offered_mint.key(),
         constraint = swap.escrow == escrow.key(),
         constraint = swap.state != SwapState::Created as u8 @ ErrorCode::InvalidSwapState,
     )]
@@ -56,7 +55,7 @@ pub fn handler(
     swap.state = SwapState::Created as u8;
 
     let transfer_instruction = Transfer{
-        from: ctx.accounts.creator_ata.to_account_info(),
+        from: ctx.accounts.creator_ata_offered.to_account_info(),
         to: ctx.accounts.escrow.to_account_info(),
         authority: ctx.accounts.creator.to_account_info(),
     };

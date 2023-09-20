@@ -5,17 +5,14 @@ use {
 };
 
 #[derive(Accounts)]
-pub struct CloseSwapCtx<'info> {
-    /// CHECK: creator
+pub struct CancelSwapCtx<'info> {
     #[account(mut)]
-    creator: AccountInfo<'info>,
+    creator: Signer<'info>,
 
-    #[account(mut)]
-    taker: Signer<'info>,
+    /// CHECK: needed to get swap and escrow pdas
+    taker: AccountInfo<'info>,
 
     offered_mint: Account<'info, Mint>,
-
-    desired_mint: Account<'info, Mint>,
 
     #[account(
         mut,
@@ -26,33 +23,11 @@ pub struct CloseSwapCtx<'info> {
 
     #[account(
         mut,
-        constraint=creator_ata_desired.owner == creator.key(),
-        constraint=creator_ata_desired.mint == desired_mint.key()
-    )]
-    creator_ata_desired: Account<'info, TokenAccount>,
-
-    #[account(
-        mut,
-        constraint=taker_ata_offered.owner == taker.key(),
-        constraint=taker_ata_offered.mint == offered_mint.key()
-    )]
-    taker_ata_offered: Account<'info, TokenAccount>,
-
-    #[account(
-        mut,
-        constraint=taker_ata_desired.owner == taker.key(),
-        constraint=taker_ata_desired.mint == desired_mint.key()
-    )]
-    taker_ata_desired: Account<'info, TokenAccount>,
-
-    #[account(
-        mut,
         seeds = [SWAP_SEED.as_bytes(), taker.key().as_ref()],
         bump = swap.swap_bump,
         constraint = swap.creator == creator.key(),
         constraint = swap.taker == taker.key(),
         constraint = swap.offered_mint == offered_mint.key(),
-        constraint = swap.desired_mint == desired_mint.key(),
         constraint = swap.escrow == escrow.key(),
         constraint = swap.state == SwapState::Created as u8 @ ErrorCode::InvalidSwapState,
     )]
@@ -70,12 +45,12 @@ pub struct CloseSwapCtx<'info> {
 }
 
 pub fn handler(
-    ctx: Context<CloseSwapCtx>
+    ctx: Context<CancelSwapCtx>
 ) -> Result<()> {
     let swap = &mut ctx.accounts.swap;
-    swap.state = SwapState::Closed as u8;
+    swap.state = SwapState::Cancelled as u8;
 
-    // transfer from escrow to taker
+    // transfer from escrow to creator
     let bump_vector = &[swap.swap_bump][..];
     let inner = vec![
         SWAP_SEED.as_bytes(),
@@ -86,7 +61,7 @@ pub fn handler(
 
     let transfer_instruction = Transfer{
         from: ctx.accounts.escrow.to_account_info(),
-        to: ctx.accounts.taker_ata_offered.to_account_info(),
+        to: ctx.accounts.creator_ata_offered.to_account_info(),
         authority: swap.to_account_info(),
     };
     let cpi_ctx = CpiContext::new_with_signer(
@@ -96,19 +71,6 @@ pub fn handler(
     );
 
     anchor_spl::token::transfer(cpi_ctx, swap.offered_amount)?;
-
-    // transfer from taker to creator
-    let transfer_instruction = Transfer{
-        from: ctx.accounts.taker_ata_desired.to_account_info(),
-        to: ctx.accounts.creator_ata_desired.to_account_info(),
-        authority: ctx.accounts.taker.to_account_info(),
-    };
-    let cpi_ctx = CpiContext::new(
-        ctx.accounts.token_program.to_account_info(),
-        transfer_instruction
-    );
-
-    anchor_spl::token::transfer(cpi_ctx, swap.desired_amount)?;
 
     Ok(())
 }
