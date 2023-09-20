@@ -1,0 +1,10 @@
+{
+    "rust-analyzer.linkedProjects": [
+        "./programs/token-otc/Cargo.toml",
+        "./programs/token-otc/Cargo.toml",
+        "./programs/token-otc/Cargo.toml",
+        "./programs/token-otc/Cargo.toml",
+        "./programs/token-otc/Cargo.toml",
+        "./programs/token-otc/Cargo.toml"
+    ]
+}
