@@ -1,7 +1,7 @@
 use {
     crate::{errors::ErrorCode, state::*},
     anchor_lang::prelude::*,
-    anchor_spl::token::{Mint, Token, TokenAccount, Transfer},
+    anchor_spl::token::{Mint, Token, TokenAccount, Transfer, CloseAccount},
 };
 
 #[derive(Accounts)]
@@ -71,6 +71,26 @@ pub fn handler(
     );
 
     anchor_spl::token::transfer(cpi_ctx, swap.offered_amount)?;
+
+    // close escrow
+    let should_close = {
+        ctx.accounts.escrow.reload()?;
+        ctx.accounts.escrow.amount == 0
+    };
+
+    if should_close {
+        let ca = CloseAccount{
+            account: ctx.accounts.escrow.to_account_info(),
+            destination: ctx.accounts.creator.to_account_info(),
+            authority: swap.to_account_info(),
+        };
+        let cpi_ctx = CpiContext::new_with_signer(
+            ctx.accounts.token_program.to_account_info(),
+            ca,
+            outer.as_slice(),
+        );
+        anchor_spl::token::close_account(cpi_ctx)?;
+    }
 
     Ok(())
 }
