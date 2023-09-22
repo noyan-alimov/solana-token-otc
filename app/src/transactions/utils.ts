@@ -16,10 +16,10 @@ export const getAnchorProgram = (connection: Connection, wallet: WalletContextSt
 }
 
 export const getSwapPubkey = (taker: PublicKey) => {
-    const [auctionPubkey] = PublicKey.findProgramAddressSync(
-        [Buffer.from('auction'), taker.toBuffer()], programId
+    const [swapPubkey] = PublicKey.findProgramAddressSync(
+        [Buffer.from('swap'), taker.toBuffer()], programId
     )
-    return auctionPubkey
+    return swapPubkey
 }
 
 export const getEscrowPubkey = (taker: PublicKey) => {

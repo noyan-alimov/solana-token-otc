@@ -59,6 +59,7 @@ pub struct CloseSwapCtx<'info> {
     swap: Account<'info, Swap>,
 
     #[account(
+        mut,
         seeds = [ESCROW_SEED.as_bytes(), taker.key().as_ref()],
         bump = swap.escrow_bump,
         constraint=escrow.owner == swap.key(),
