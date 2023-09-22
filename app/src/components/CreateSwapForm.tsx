@@ -5,6 +5,7 @@ import { useConnection, useWallet } from '@solana/wallet-adapter-react'
 import { PublicKey } from '@solana/web3.js'
 import toast, { Toaster } from 'react-hot-toast'
 import { FormSchemaType, formSchema } from '../schemas'
+import { ErrorFormMsg } from './ErrorFormMsg'
 
 export const CreateSwapForm = () => {
     const wallet = useWallet()
@@ -97,13 +98,9 @@ export const CreateSwapForm = () => {
             </div>
             <div>
                 <button type='submit' className='btn btn-primary'>
-                    SUBMIT
+                    CREATE SWAP
                 </button>
             </div>
         </form>
     )
 }
-
-const ErrorFormMsg = ({ msg }: { msg: string }) => (
-    <p className='text-red-500'>{msg}</p>
-)

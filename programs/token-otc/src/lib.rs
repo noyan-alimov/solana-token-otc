@@ -4,7 +4,7 @@ pub mod instructions;
 pub mod state;
 pub mod errors;
 
-declare_id!("BuxnzeA7AXB77qpyg3d4Hk4RE7Qm7AXkfQ7Wh7dedLw4");
+declare_id!("GGFSngtbnbEAgZQZBRYESAhFsoi22tJfrc4EJjtDxf63");
 
 #[program]
 pub mod token_otc {

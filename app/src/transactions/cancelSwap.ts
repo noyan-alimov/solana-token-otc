@@ -25,7 +25,7 @@ export const getCancelSwapTxn = async ({
     const creatorAtaOffered = getAssociatedTokenAddressSync(offeredMint, creator)
 
     txn.add(
-        await program.methods.closeSwap().accounts({
+        await program.methods.cancelSwap().accounts({
             creator,
             taker,
             escrow: escrowPubkey,

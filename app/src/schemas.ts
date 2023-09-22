@@ -12,8 +12,8 @@ export const formSchema = z.object({
 
 export type FormSchemaType = z.infer<typeof formSchema>
 
-export const swapSchema = formSchema.merge(z.object({
-    creator: walletZod
-}))
+export const mySwapFormSchema = z.object({
+    taker: walletZod
+})
 
-export type SwapSchemaType = z.infer<typeof formSchema>
+export type MySwapFormSchemaType = z.infer<typeof mySwapFormSchema>

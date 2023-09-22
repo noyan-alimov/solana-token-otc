@@ -69,13 +69,13 @@ export const Swap: FC<{ walletAddress: string }> = ({ walletAddress }) => {
         return <div>Error: {'Error querying swap data'}</div>
     }
 
-    if (!query.data) return <div>No one initiated a swap with you</div>
+    if (!query.data) return <div>No swap found</div>
 
     return (
         <div>
             <div className='mb-4'>{JSON.stringify(query.data, null, 2)}</div>
             <div>
-                {walletAddress === query.data.creator.toString() ? (
+                {walletAddress !== wallet?.publicKey?.toString() ? (
                     <button className='btn btn-secondary' onClick={cancelSwap}>Cancel Swap</button>
                 ) : (
                     <button className='btn btn-secondary' onClick={closeSwap}>Accept Swap</button>
