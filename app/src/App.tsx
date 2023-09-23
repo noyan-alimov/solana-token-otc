@@ -8,6 +8,7 @@ function App() {
 
   return (
     <div className='flex flex-col gap-8'>
+      <h1 className='text-3xl font-bold'>Solana OTC token swap</h1>
       <div>
         <h2 className='text-xl mb-4'>Create swap</h2>
         <CreateSwapForm />

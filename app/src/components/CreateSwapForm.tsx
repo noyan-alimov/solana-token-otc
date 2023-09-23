@@ -6,6 +6,7 @@ import { PublicKey } from '@solana/web3.js'
 import toast, { Toaster } from 'react-hot-toast'
 import { FormSchemaType, formSchema } from '../schemas'
 import { ErrorFormMsg } from './ErrorFormMsg'
+import { getMint } from '@solana/spl-token'
 
 export const CreateSwapForm = () => {
     const wallet = useWallet()
@@ -27,15 +28,19 @@ export const CreateSwapForm = () => {
         }
 
         toast.promise((async () => {
+            const offeredMint = new PublicKey(data.offeredMint)
+            const desiredMint = new PublicKey(data.desiredMint)
+            const offeredMintInfo = await getMint(connection, offeredMint)
+            const desiredMintInfo = await getMint(connection, desiredMint)
             const txn = await getCreateSwapTx({
                 connection,
                 wallet,
                 taker: new PublicKey(data.taker),
                 creator: wallet.publicKey,
-                offeredMint: new PublicKey(data.offeredMint),
-                desiredMint: new PublicKey(data.desiredMint),
-                offeredAmount: data.offeredAmount,
-                desiredAmount: data.desiredAmount
+                offeredMint,
+                desiredMint,
+                offeredAmount: Math.pow(10, offeredMintInfo.decimals) * data.offeredAmount,
+                desiredAmount: Math.pow(10, desiredMintInfo.decimals) * data.desiredAmount
             })
             await wallet.sendTransaction(txn, connection)
             reset()
@@ -70,7 +75,6 @@ export const CreateSwapForm = () => {
                     <label className='block' htmlFor='offeredAmount'>Amount</label>
                     <input
                         className='p-2 rounded'
-                        type='number'
                         {...register('offeredAmount')}
                     />
                     {errors.offeredAmount && <ErrorFormMsg msg={errors.offeredAmount.message} />}
@@ -89,7 +93,6 @@ export const CreateSwapForm = () => {
                     <label className='block' htmlFor='desiredAmount'>Amount</label>
                     <input
                         className='p-2 rounded'
-                        type='number'
                         {...register('desiredAmount')}
                     />
                     {errors.desiredAmount && <ErrorFormMsg msg={errors.desiredAmount.message} />}
