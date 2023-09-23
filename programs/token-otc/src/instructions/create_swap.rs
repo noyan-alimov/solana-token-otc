@@ -32,6 +32,7 @@ pub struct CreateSwapCtx<'info> {
     swap: Account<'info, Swap>,
 
     #[account(
+        mut,
         seeds = [ESCROW_SEED.as_bytes(), taker.key().as_ref()],
         bump = swap.escrow_bump,
     )]
