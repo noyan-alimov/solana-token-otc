@@ -38,6 +38,7 @@ export const Swap: FC<{ walletAddress: string }> = ({ walletAddress }) => {
                 desiredMint: new PublicKey(query.data.desiredMint),
             })
             await wallet.sendTransaction(txn, connection)
+            query.refetch()
         })(), {
             loading: 'Accepting swap...',
             success: 'Swap accepted!',
@@ -55,11 +56,17 @@ export const Swap: FC<{ walletAddress: string }> = ({ walletAddress }) => {
                 offeredMint: new PublicKey(query.data.offeredMint)
             })
             await wallet.sendTransaction(txn, connection)
+            query.refetch()
         })(), {
             loading: 'Canceling swap...',
             success: 'Swap canceled!',
             error: 'Error canceling swap'
         })
+    }
+
+    const renderState = (state: number) => {
+        if (state === 2) return 'swap is CLOSED'
+        return 'swap is CANCELED'
     }
 
     if (query.isLoading) return <div>Loading...</div>
@@ -74,13 +81,15 @@ export const Swap: FC<{ walletAddress: string }> = ({ walletAddress }) => {
     return (
         <div>
             <div className='mb-4'>{JSON.stringify(query.data, null, 2)}</div>
-            <div>
-                {walletAddress !== wallet?.publicKey?.toString() ? (
-                    <button className='btn btn-secondary' onClick={cancelSwap}>Cancel Swap</button>
-                ) : (
-                    <button className='btn btn-secondary' onClick={closeSwap}>Accept Swap</button>
-                )}
-            </div>
+            {query.data.state !== 1 ? renderState(query.data.state) : (
+                <div>
+                    {walletAddress !== wallet?.publicKey?.toString() ? (
+                        <button className='btn btn-primary' onClick={cancelSwap}>Cancel Swap</button>
+                    ) : (
+                        <button className='btn btn-primary' onClick={closeSwap}>Accept Swap</button>
+                    )}
+                </div>
+            )}
         </div>
     )
 }

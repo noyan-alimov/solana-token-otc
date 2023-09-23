@@ -34,7 +34,7 @@ export const MySwap = () => {
                     />
                     {errors.taker && <ErrorFormMsg msg={errors.taker.message} />}
                 </div>
-                <div><button type='submit' className='btn btn-secondary'>SUBMIT</button></div>
+                <div><button type='submit' className='btn btn-primary'>SUBMIT</button></div>
             </form>
             <div>
                 {walletAddress && <Swap walletAddress={walletAddress} />}

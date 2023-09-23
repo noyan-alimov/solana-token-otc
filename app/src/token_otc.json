@@ -109,7 +109,7 @@
         },
         {
           "name": "escrow",
-          "isMut": false,
+          "isMut": true,
           "isSigner": false
         },
         {

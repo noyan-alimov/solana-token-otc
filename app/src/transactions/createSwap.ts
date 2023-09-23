@@ -1,5 +1,5 @@
 import { WalletContextState } from '@solana/wallet-adapter-react'
-import { Connection, PublicKey, SYSVAR_RENT_PUBKEY, SystemProgram, Transaction } from '@solana/web3.js'
+import { Connection, LAMPORTS_PER_SOL, PublicKey, SYSVAR_RENT_PUBKEY, SystemProgram, Transaction } from '@solana/web3.js'
 import { getAnchorProgram, getEscrowPubkey, getSwapPubkey } from './utils'
 import { TOKEN_PROGRAM_ID, TokenAccountNotFoundError, TokenInvalidAccountOwnerError, createAssociatedTokenAccountInstruction, getAccount, getAssociatedTokenAddressSync } from '@solana/spl-token'
 import { BN } from 'bn.js'
@@ -70,7 +70,7 @@ export const getCreateSwapTx = async ({
     }
 
     txn.add(
-        await program.methods.createSwap(new BN(offeredAmount), new BN(desiredAmount)).accounts({
+        await program.methods.createSwap(new BN(offeredAmount * LAMPORTS_PER_SOL), new BN(desiredAmount * LAMPORTS_PER_SOL)).accounts({
             creator,
             taker,
             escrow: escrowPubkey,

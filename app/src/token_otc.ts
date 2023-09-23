@@ -109,7 +109,7 @@ export type TokenOtc = {
         },
         {
           "name": "escrow",
-          "isMut": false,
+          "isMut": true,
           "isSigner": false
         },
         {
@@ -421,7 +421,7 @@ export const IDL: TokenOtc = {
         },
         {
           "name": "escrow",
-          "isMut": false,
+          "isMut": true,
           "isSigner": false
         },
         {

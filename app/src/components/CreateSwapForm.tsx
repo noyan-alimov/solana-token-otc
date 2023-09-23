@@ -27,7 +27,6 @@ export const CreateSwapForm = () => {
         }
 
         toast.promise((async () => {
-            console.log(data)
             const txn = await getCreateSwapTx({
                 connection,
                 wallet,
